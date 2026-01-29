@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, forwardRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { PointerLockControls, Box, Plane, Text } from '@react-three/drei';
 import * as THREE from 'three';
@@ -9,7 +9,7 @@ interface TheaterRoomProps {
 
 function Room({ onReachStage }: { onReachStage: () => void }) {
   const { camera } = useThree();
-  const controlsRef = useRef<any>(null);
+  const controls = useThree((state) => state.controls) as any;
   const [velocity] = useState(() => new THREE.Vector3());
   const [direction] = useState(() => new THREE.Vector3());
   const [moveForward, setMoveForward] = useState(false);
@@ -76,7 +76,7 @@ function Room({ onReachStage }: { onReachStage: () => void }) {
   }, [camera]);
 
   useFrame((_, delta) => {
-    if (!controlsRef.current?.isLocked) return;
+    if (!controls?.isLocked) return;
 
     velocity.x -= velocity.x * 10.0 * delta;
     velocity.z -= velocity.z * 10.0 * delta;
@@ -88,8 +88,8 @@ function Room({ onReachStage }: { onReachStage: () => void }) {
     if (moveForward || moveBackward) velocity.z -= direction.z * 25.0 * delta;
     if (moveLeft || moveRight) velocity.x -= direction.x * 25.0 * delta;
 
-    controlsRef.current.moveRight(-velocity.x * delta);
-    controlsRef.current.moveForward(-velocity.z * delta);
+    controls.moveRight(-velocity.x * delta);
+    controls.moveForward(-velocity.z * delta);
 
     // Limites de la pièce
     camera.position.x = Math.max(-6, Math.min(6, camera.position.x));
@@ -103,7 +103,7 @@ function Room({ onReachStage }: { onReachStage: () => void }) {
 
   return (
     <>
-      <PointerLockControls ref={controlsRef} />
+      <PointerLockControls makeDefault />
       
       {/* Éclairage */}
       <ambientLight intensity={0.2} />

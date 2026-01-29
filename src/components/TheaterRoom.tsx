@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, forwardRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { PointerLockControls, Box, Plane, Text } from '@react-three/drei';
 import * as THREE from 'three';
@@ -22,6 +22,7 @@ function Room({ onReachStage }: { onReachStage: () => void }) {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.code) {
+        case 'KeyZ':
         case 'KeyW':
         case 'ArrowUp':
           setMoveForward(true);
@@ -30,6 +31,7 @@ function Room({ onReachStage }: { onReachStage: () => void }) {
         case 'ArrowDown':
           setMoveBackward(true);
           break;
+        case 'KeyQ':
         case 'KeyA':
         case 'ArrowLeft':
           setMoveLeft(true);
@@ -43,6 +45,7 @@ function Room({ onReachStage }: { onReachStage: () => void }) {
 
     const handleKeyUp = (event: KeyboardEvent) => {
       switch (event.code) {
+        case 'KeyZ':
         case 'KeyW':
         case 'ArrowUp':
           setMoveForward(false);
@@ -51,6 +54,7 @@ function Room({ onReachStage }: { onReachStage: () => void }) {
         case 'ArrowDown':
           setMoveBackward(false);
           break;
+        case 'KeyQ':
         case 'KeyA':
         case 'ArrowLeft':
           setMoveLeft(false);
@@ -190,20 +194,34 @@ function Room({ onReachStage }: { onReachStage: () => void }) {
 export const TheaterRoom = ({ onReachStage }: TheaterRoomProps) => {
   const [isLocked, setIsLocked] = useState(false);
 
+  useEffect(() => {
+    const handleLockChange = () => {
+      setIsLocked(document.pointerLockElement !== null);
+    };
+
+    document.addEventListener('pointerlockchange', handleLockChange);
+    return () => document.removeEventListener('pointerlockchange', handleLockChange);
+  }, []);
+
+  const handleClick = () => {
+    const canvas = document.querySelector('canvas');
+    if (canvas) {
+      canvas.requestPointerLock();
+    }
+  };
+
   return (
-    <div className="w-full h-screen relative">
-      <Canvas shadows>
+    <div className="w-full h-screen relative bg-background">
+      <Canvas shadows camera={{ position: [0, 1.6, 8], fov: 75 }}>
+        <color attach="background" args={['#141010']} />
+        <fog attach="fog" args={['#141010', 5, 25]} />
         <Room onReachStage={onReachStage} />
       </Canvas>
 
       {!isLocked && (
         <div 
-          className="absolute inset-0 flex items-center justify-center bg-background/80 cursor-pointer"
-          onClick={() => {
-            const canvas = document.querySelector('canvas');
-            canvas?.requestPointerLock();
-            setIsLocked(true);
-          }}
+          className="absolute inset-0 flex items-center justify-center bg-background/90 cursor-pointer z-10"
+          onClick={handleClick}
         >
           <div className="text-center">
             <h2 className="theater-title mb-4">Bienvenue au Théâtre</h2>
@@ -221,14 +239,14 @@ export const TheaterRoom = ({ onReachStage }: TheaterRoomProps) => {
       )}
 
       {isLocked && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 text-center pointer-events-none">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 text-center pointer-events-none z-10">
           <p className="text-primary text-sm bg-background/50 px-4 py-2 rounded">
             Appuie sur <span className="font-bold">ESC</span> pour libérer la souris
           </p>
         </div>
       )}
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center pointer-events-none">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center pointer-events-none z-10">
         <p className="text-gold animate-pulse text-lg">
           → Avance vers la scène ←
         </p>

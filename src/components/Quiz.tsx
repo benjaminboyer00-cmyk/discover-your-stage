@@ -13,19 +13,19 @@ const questions: Question[] = [
     id: 1,
     question: "Quelle est ma couleur préférée ?",
     options: ["Rouge", "Bleu", "Vert", "Violet"],
-    correctIndex: 1, // Bleu - tu peux changer
+    correctIndex: 0, // Rouge
   },
   {
     id: 2,
     question: "Quel est mon plat favori ?",
     options: ["Pizza", "Sushi", "Tacos", "Pâtes"],
-    correctIndex: 0, // Pizza - tu peux changer
+    correctIndex: 0, // Pizza
   },
   {
     id: 3,
     question: "Quelle est ma saison préférée ?",
     options: ["Printemps", "Été", "Automne", "Hiver"],
-    correctIndex: 2, // Automne - tu peux changer
+    correctIndex: 0, // Printemps
   },
 ];
 

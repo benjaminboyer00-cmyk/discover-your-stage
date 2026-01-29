@@ -210,6 +210,11 @@ export const TheaterRoom = ({ onReachStage }: TheaterRoomProps) => {
     }
   };
 
+  const handleSkip = () => {
+    // Allow skipping to the stage directly
+    onReachStage();
+  };
+
   return (
     <div className="w-full h-screen relative bg-background">
       <Canvas shadows camera={{ position: [0, 1.6, 8], fov: 75 }}>
@@ -234,6 +239,12 @@ export const TheaterRoom = ({ onReachStage }: TheaterRoomProps) => {
             <p className="text-muted-foreground mt-4">
               Dirige-toi vers la scène...
             </p>
+            <button 
+              onClick={(e) => { e.stopPropagation(); handleSkip(); }}
+              className="mt-8 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/80 transition-colors"
+            >
+              Aller directement à la scène →
+            </button>
           </div>
         </div>
       )}
